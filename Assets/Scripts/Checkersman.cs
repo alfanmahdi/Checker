@@ -92,9 +92,12 @@ public class Checkersman : MonoBehaviour
         switch (this.name)
         {
             case "black":
-            case "red":
                 LineMovePlate(1, 1);
                 LineMovePlate(-1, 1);
+                break;
+            case "red":
+                LineMovePlate(1, -1);
+                LineMovePlate(-1, -1);
                 break;
             case"king_black":
             case"king_red":
@@ -170,5 +173,4 @@ public class Checkersman : MonoBehaviour
         mpScript.SetReference(gameObject);
         mpScript.SetCoords(matrixX, matrixY);
     }
-
 }

@@ -88,7 +88,7 @@ public class Game : MonoBehaviour
         {
             currentPlayer = "red";
         }
-        else
+        else if (currentPlayer == "red")
         {
             currentPlayer = "black";
         }
