@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Game : MonoBehaviour
 {
@@ -11,19 +12,19 @@ public class Game : MonoBehaviour
     private GameObject[] playerBlack = new GameObject[12];
     private GameObject[] playerRed = new GameObject[12];
 
-    // private string currentPlayer = "black";
+    private string currentPlayer = "black";
 
-    // private bool gameOver = false;
+    private bool gameOver = false;
 
     // Start is called before the first frame update
-    void Start()
+    public void Start()
     {
-        playerRed = new GameObject[] {
+        playerBlack = new GameObject[] {
             Create("black", 0, 0), Create("black", 2, 0), Create("black", 4, 0), Create("black", 6, 0),
             Create("black", 1, 1), Create("black", 3, 1), Create("black", 5, 1), Create("black", 7, 1),
             Create("black", 0, 2), Create("black", 2, 2), Create("black", 4, 2), Create("black", 6, 2)
         };
-        playerBlack = new GameObject[] {
+        playerRed = new GameObject[] {
             Create("red", 1, 7), Create("red", 3, 7), Create("red", 5, 7), Create("red", 7, 7),
             Create("red", 0, 6), Create("red", 2, 6), Create("red", 4, 6), Create("red", 6, 6),
             Create("red", 1, 5), Create("red", 3, 5), Create("red", 5, 5), Create("red", 7, 5)
@@ -53,5 +54,53 @@ public class Game : MonoBehaviour
         Checkersman cm = obj.GetComponent<Checkersman>();
 
         positions[cm.GetXBoard(), cm.GetYBoard()] = obj;
+    }
+
+    public void SetPositionEmpty(int x, int y)
+    {
+        positions[x, y] = null;
+    }
+
+    public GameObject GetPosition(int x, int y)
+    {
+        return positions[x, y];
+    }
+
+    public bool PositionOnBoard(int x, int y)
+    {
+        if (x < 0 || y < 0 || x >= positions.GetLength(0) || y >= positions.GetLength(1)) return false;
+        return true;
+    }
+
+    public string GetCurrentPlayer()
+    {
+        return currentPlayer;
+    }
+
+    public bool IsGameOver()
+    {
+        return gameOver;
+    }
+
+    public void NextTurn()
+    {
+        if (currentPlayer == "black")
+        {
+            currentPlayer = "red";
+        }
+        else
+        {
+            currentPlayer = "black";
+        }
+    }
+
+    public void Update()
+    {
+        if (gameOver == true && Input.GetMouseButtonDown(0))
+        {
+            gameOver = false;
+
+            SceneManager.LoadScene("Game");
+        }
     }
 }
