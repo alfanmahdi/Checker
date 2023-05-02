@@ -116,6 +116,20 @@ public class Checkersman : MonoBehaviour
         int x = xBoard + xIncrement;
         int y = yBoard + yIncrement;
 
+        // jika bidak belum menjadi raja, batasi gerakan hanya satu langkah ke depan (atau mundur)
+        if (!IsKing())
+        {
+            if ((player == "black" && yIncrement == 1) || (player == "red" && yIncrement == -1))
+            {
+                if (!sc.PositionOnBoard(x, y) || sc.GetPosition(x, y) != null)
+                {
+                    return;
+                }
+                MovePlateSpawn(x, y);
+                return;
+            }
+        }
+
         while (sc.PositionOnBoard(x,y) && sc.GetPosition(x,y) == null)
         {
             MovePlateSpawn(x, y);
@@ -127,6 +141,40 @@ public class Checkersman : MonoBehaviour
         {
             MovePlateAttackSpawn(x, y);
         }
+    }
+
+    public bool IsKing()
+    {
+        switch (this.name)
+        {
+            case "king_black":
+            case "king_red":
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public bool CanCapture(int x, int y)
+    {
+        // Check if there is an opponent's piece in between this piece and the destination
+        int dx = x - xBoard;
+        int dy = y - yBoard;
+
+        // check if the destination is within the board boundaries and is an empty tile
+        if (controller.GetComponent<Game>().PositionOnBoard(x, y) && controller.GetComponent<Game>().GetPosition(x, y) == null)
+        {
+            int midX = xBoard + dx / 2;
+            int midY = yBoard + dy / 2;
+
+            // check if there is an opponent's piece in between this piece and the destination
+            if (controller.GetComponent<Game>().GetPosition(midX, midY) != null && controller.GetComponent<Game>().GetPosition(midX, midY).GetComponent<Checkersman>().player != player)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
     
     public void MovePlateSpawn(int matrixX, int matrixY)
@@ -173,4 +221,5 @@ public class Checkersman : MonoBehaviour
         mpScript.SetReference(gameObject);
         mpScript.SetCoords(matrixX, matrixY);
     }
+
 }
