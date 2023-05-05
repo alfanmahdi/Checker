@@ -116,30 +116,32 @@ public class Checkersman : MonoBehaviour
         int x = xBoard + xIncrement;
         int y = yBoard + yIncrement;
 
-        // jika bidak belum menjadi raja, batasi gerakan hanya satu langkah ke depan (atau mundur)
-        if (!IsKing())
+        if(IsKing())
         {
-            if ((player == "black" && yIncrement == 1) || (player == "red" && yIncrement == -1))
+            while (sc.PositionOnBoard(x,y) && sc.GetPosition(x,y) == null)
             {
-                if (!sc.PositionOnBoard(x, y) || sc.GetPosition(x, y) != null)
-                {
-                    return;
-                }
                 MovePlateSpawn(x, y);
-                return;
+                x += xIncrement;
+                y += yIncrement;
             }
-        }
 
-        while (sc.PositionOnBoard(x,y) && sc.GetPosition(x,y) == null)
+            if (sc.PositionOnBoard(x,y) && sc.GetPosition(x,y).GetComponent<Checkersman>().player != player)
+            {
+                MovePlateAttackSpawn(x, y);
+            }
+        } else
         {
-            MovePlateSpawn(x, y);
-            x += xIncrement;
-            y += yIncrement;
-        }
-
-        if (sc.PositionOnBoard(x,y) && sc.GetPosition(x,y).GetComponent<Checkersman>().player != player)
-        {
-            MovePlateAttackSpawn(x, y);
+            if (sc.PositionOnBoard(x,y) && sc.GetPosition(x,y) == null)
+            {
+                MovePlateSpawn(x, y);
+            } else if (sc.PositionOnBoard(x,y) && sc.GetPosition(x,y).GetComponent<Checkersman>().player != player)
+            {
+                MovePlateAttackSpawn(x, y);
+            }
+            if (y == (player == "black" ? 7 : 0))
+                {
+                    PromoteToKing();
+                }
         }
     }
 
@@ -153,28 +155,6 @@ public class Checkersman : MonoBehaviour
             default:
                 return false;
         }
-    }
-
-    public bool CanCapture(int x, int y)
-    {
-        // Check if there is an opponent's piece in between this piece and the destination
-        int dx = x - xBoard;
-        int dy = y - yBoard;
-
-        // check if the destination is within the board boundaries and is an empty tile
-        if (controller.GetComponent<Game>().PositionOnBoard(x, y) && controller.GetComponent<Game>().GetPosition(x, y) == null)
-        {
-            int midX = xBoard + dx / 2;
-            int midY = yBoard + dy / 2;
-
-            // check if there is an opponent's piece in between this piece and the destination
-            if (controller.GetComponent<Game>().GetPosition(midX, midY) != null && controller.GetComponent<Game>().GetPosition(midX, midY).GetComponent<Checkersman>().player != player)
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
     
     public void MovePlateSpawn(int matrixX, int matrixY)
@@ -222,4 +202,12 @@ public class Checkersman : MonoBehaviour
         mpScript.SetCoords(matrixX, matrixY);
     }
 
+    public void PromoteToKing()
+    {
+        switch (this.name)
+        {
+            case "black": transform.name = "king_black"; this.GetComponent<SpriteRenderer>().sprite = king_black; break;
+            case "red": transform.name = "king_red"; this.GetComponent<SpriteRenderer>().sprite = king_red; break;
+        }
+    }
 }
